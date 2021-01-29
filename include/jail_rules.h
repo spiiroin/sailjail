@@ -83,6 +83,8 @@ struct jail_rules {
     const JailPath* const* paths;
     const JailDBus* dbus_user;
     const JailDBus* dbus_system;
+    // HAXOR
+    char* const* booster_type;
 };
 
 char*

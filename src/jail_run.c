@@ -275,8 +275,28 @@ jail_run(
         g_ptr_array_add(args_alloc, opt);
     }
 
+    /* If we're using booster, invoker must be made available
+     * within the sandbox
+     */
+    // HAXOR
+    const char* booster_type = *(rules->booster_type);
+    if (booster_type) {
+        g_ptr_array_add(args, "--private-bin=invoker");
+    }
+
     /* 3. Done with firejail options */
     g_ptr_array_add(args, (gpointer) FIREJAIL_FINISH_OPT);
+
+    /* If we're using booster, invoker must be inserted
+     * at the start of command line
+     */
+    // HAXOR
+    if (booster_type) {
+        g_ptr_array_add(args, "/usr/bin/invoker");
+        char *opt = g_strdup_printf("--type=%s", booster_type);
+        g_ptr_array_add(args, opt);
+        g_ptr_array_add(args_alloc, opt);
+    }
 
     /* Append the program name and its arguments */
     for (i = 0; i < argc; i++) {

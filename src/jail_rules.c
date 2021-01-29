@@ -93,6 +93,8 @@ typedef struct jail_rules_data {
     GPtrArray* dbus_user_talk;
     GPtrArray* dbus_system_own;
     GPtrArray* dbus_system_talk;
+    // HAXOR
+    char *booster_type;
 } JailRulesData;
 
 typedef struct jail_rules_priv {
@@ -100,6 +102,8 @@ typedef struct jail_rules_priv {
     JailDBus dbus_user;
     JailDBus dbus_system;
     gint ref_count;
+    // HAXOR
+    char *booster_type;
 } JailRulesPriv;
 
 static const char* const jail_rules_none[] = { NULL };
@@ -457,6 +461,8 @@ jail_rules_data_alloc(
     data->dbus_user_talk = g_ptr_array_new_with_free_func(g_free);
     data->dbus_system_own = g_ptr_array_new_with_free_func(g_free);
     data->dbus_system_talk = g_ptr_array_new_with_free_func(g_free);
+    // HAXOR
+    data->booster_type = 0;
     return data;
 }
 
@@ -482,6 +488,12 @@ jail_rules_parse_section(
 {
     JailRulesData* data = jail_rules_data_new(conf);
     char* val;
+
+    // HAXOR
+    /* BoosterType= */
+    g_free(data->booster_type);
+    data->booster_type = g_key_file_get_string(kf, section, "BoosterType", NULL);
+    fprintf(stderr, "BoosterType=%s\n", data->booster_type);
 
     /* Permissions= */
     val = g_key_file_get_string(kf, section, SAILJAIL_KEY_PERMS, NULL);
@@ -609,7 +621,6 @@ jail_rules_parse_section(
         SAILJAIL_KEY_DBUS_SYSTEM_OWN, data->dbus_system_own);
     jail_rules_parse_dbus_names(kf, section,
         SAILJAIL_KEY_DBUS_SYSTEM_TALK, data->dbus_system_talk);
-
 
     /* D-Bus / whitelist rules derived from Orgnanization/ApplicationName */
     {
@@ -888,10 +899,16 @@ jail_rules_from_data(
         rules->paths = jail_rules_ptrv_new(data->paths);
         rules->dbus_user = &priv->dbus_user;
         rules->dbus_system = &priv->dbus_system;
+        // HAXOR
+        rules->booster_type = &priv->booster_type;
+
         priv->dbus_user.own = jail_rules_ptrv_new(data->dbus_user_own);
         priv->dbus_user.talk = jail_rules_ptrv_new(data->dbus_user_talk);
         priv->dbus_system.own = jail_rules_ptrv_new(data->dbus_system_own);
         priv->dbus_system.talk = jail_rules_ptrv_new(data->dbus_system_talk);
+        // HAXOR
+        priv->booster_type = data->booster_type;
+
         g_atomic_int_set(&priv->ref_count, 1);
         g_free(data);
         return rules;
@@ -941,6 +958,8 @@ jail_rules_unref(
             jail_rules_ptrv_free(priv->dbus_user.talk);
             jail_rules_ptrv_free(priv->dbus_system.own);
             jail_rules_ptrv_free(priv->dbus_system.talk);
+            // HAXOR
+            g_free(priv->booster_type);
             g_free(priv);
         }
     }
