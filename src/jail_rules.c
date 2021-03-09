@@ -473,8 +473,10 @@ jail_rules_data_new(
 {
     JailRulesData* data = jail_rules_data_alloc();
 
+// QUARANTINE #if 0 // XXX: handle implicitly, so it can be handled as the last item ...
     /* Always include required base profile */
     jail_rules_add_profile(data, conf, SAILJAIL_BASE_PERM, TRUE);
+// QUARANTINE #endif
     return data;
 }
 
