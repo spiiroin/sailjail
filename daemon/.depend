@@ -1,0 +1,264 @@
+appinfo.o:\
+	appinfo.c\
+	appinfo.h\
+	applications.h\
+	control.h\
+	logging.h\
+	stringset.h\
+	util.h\
+
+appinfo.pic.o:\
+	appinfo.c\
+	appinfo.h\
+	applications.h\
+	control.h\
+	logging.h\
+	stringset.h\
+	util.h\
+
+applications.o:\
+	applications.c\
+	appinfo.h\
+	applications.h\
+	control.h\
+	logging.h\
+	stringset.h\
+	util.h\
+
+applications.pic.o:\
+	applications.c\
+	appinfo.h\
+	applications.h\
+	control.h\
+	logging.h\
+	stringset.h\
+	util.h\
+
+config.o:\
+	config.c\
+	config.h\
+	logging.h\
+	util.h\
+
+config.pic.o:\
+	config.c\
+	config.h\
+	logging.h\
+	util.h\
+
+control.o:\
+	control.c\
+	appinfo.h\
+	applications.h\
+	config.h\
+	later.h\
+	logging.h\
+	mainloop.h\
+	permissions.h\
+	service.h\
+	session.h\
+	settings.h\
+	stringset.h\
+	users.h\
+	util.h\
+
+control.pic.o:\
+	control.c\
+	appinfo.h\
+	applications.h\
+	config.h\
+	later.h\
+	logging.h\
+	mainloop.h\
+	permissions.h\
+	service.h\
+	session.h\
+	settings.h\
+	stringset.h\
+	users.h\
+	util.h\
+
+later.o:\
+	later.c\
+	later.h\
+	logging.h\
+
+later.pic.o:\
+	later.c\
+	later.h\
+	logging.h\
+
+logging.o:\
+	logging.c\
+	logging.h\
+	util.h\
+
+logging.pic.o:\
+	logging.c\
+	logging.h\
+	util.h\
+
+mainloop.o:\
+	mainloop.c\
+	mainloop.h\
+
+mainloop.pic.o:\
+	mainloop.c\
+	mainloop.h\
+
+permissions.o:\
+	permissions.c\
+	control.h\
+	logging.h\
+	permissions.h\
+	stringset.h\
+	util.h\
+
+permissions.pic.o:\
+	permissions.c\
+	control.h\
+	logging.h\
+	permissions.h\
+	stringset.h\
+	util.h\
+
+prompter.o:\
+	prompter.c\
+	appinfo.h\
+	applications.h\
+	control.h\
+	logging.h\
+	prompter.h\
+	service.h\
+	session.h\
+	settings.h\
+	stringset.h\
+	util.h\
+
+prompter.pic.o:\
+	prompter.c\
+	appinfo.h\
+	applications.h\
+	control.h\
+	logging.h\
+	prompter.h\
+	service.h\
+	session.h\
+	settings.h\
+	stringset.h\
+	util.h\
+
+sailjaild.o:\
+	sailjaild.c\
+	config.h\
+	control.h\
+	logging.h\
+	mainloop.h\
+
+sailjaild.pic.o:\
+	sailjaild.c\
+	config.h\
+	control.h\
+	logging.h\
+	mainloop.h\
+
+service.o:\
+	service.c\
+	appinfo.h\
+	applications.h\
+	control.h\
+	logging.h\
+	mainloop.h\
+	permissions.h\
+	prompter.h\
+	service.h\
+	session.h\
+	settings.h\
+	stringset.h\
+	util.h\
+
+service.pic.o:\
+	service.c\
+	appinfo.h\
+	applications.h\
+	control.h\
+	logging.h\
+	mainloop.h\
+	permissions.h\
+	prompter.h\
+	service.h\
+	session.h\
+	settings.h\
+	stringset.h\
+	util.h\
+
+session.o:\
+	session.c\
+	control.h\
+	logging.h\
+	session.h\
+	util.h\
+
+session.pic.o:\
+	session.c\
+	control.h\
+	logging.h\
+	session.h\
+	util.h\
+
+settings.o:\
+	settings.c\
+	appinfo.h\
+	control.h\
+	logging.h\
+	settings.h\
+	stringset.h\
+	util.h\
+
+settings.pic.o:\
+	settings.c\
+	appinfo.h\
+	control.h\
+	logging.h\
+	settings.h\
+	stringset.h\
+	util.h\
+
+stringset.o:\
+	stringset.c\
+	logging.h\
+	stringset.h\
+
+stringset.pic.o:\
+	stringset.c\
+	logging.h\
+	stringset.h\
+
+users.o:\
+	users.c\
+	config.h\
+	control.h\
+	logging.h\
+	users.h\
+	util.h\
+
+users.pic.o:\
+	users.c\
+	config.h\
+	control.h\
+	logging.h\
+	users.h\
+	util.h\
+
+util.o:\
+	util.c\
+	logging.h\
+	stringset.h\
+	util.h\
+
+util.pic.o:\
+	util.c\
+	logging.h\
+	stringset.h\
+	util.h\
+

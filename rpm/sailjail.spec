@@ -24,6 +24,9 @@ Requires: libglibutil >= %{libglibutil_version}
 # libglibutil >= 1.0.49 is required for gutil_slice_free() macro
 BuildRequires: pkgconfig(libglibutil) >= 1.0.49
 BuildRequires: pkgconfig(glib-2.0) >= %{glib_version}
+BuildRequires: pkgconfig(gobject-2.0)
+BuildRequires: pkgconfig(gio-2.0)
+BuildRequires: pkgconfig(libsystemd)
 
 %description
 Firejail-based sanboxing for Sailfish OS.
@@ -44,6 +47,15 @@ Requires: python3-base
 %{summary}.
 Contains a script to measure launching time.
 
+%package daemon
+Summary: Daemon for managing application sandboxing permissions
+
+%description daemon
+This package contains daemon that keeps track of:
+- defined permissions (under /etc/sailjail/permissions)
+- permissions required by applications (under /usr/share/applications)
+- what permissions user has granted to each application
+
 %prep
 %setup -q -n %{name}-%{version}
 
@@ -54,12 +66,34 @@ make %{_smp_mflags} \
   HAVE_FIREJAIL=%{jailfish} \
   release pkgconfig
 
+make %{_smp_mflags} \
+  VERSION=%{version}\
+  _LIBDIR=%{_libdir}\
+  -C daemon build
+
 %install
 rm -rf %{buildroot}
 make DESTDIR=%{buildroot} LIBDIR=%{_libdir} install install-dev
 
 install -D -m755 tools/measure_launch_time.py \
         %{buildroot}%{_bindir}/measure_launch_time
+
+make \
+  _SYSCONFDIR=%{_sysconfdir}\
+  _DATADIR=%{_datadir}\
+  _LIBDIR=%{_libdir}\
+  _USERUNITDIR=%{_userunitdir}\
+  _UNITDIR=%{_unitdir}\
+  DESTDIR=%{buildroot}\
+  -C daemon install
+
+install -d %{buildroot}%{_unitdir}/multi-user.target.wants
+install -m644 daemon/systemd/sailjaild.service %{buildroot}%{_unitdir}
+ln -s ../sailjaild.service %{buildroot}%{_unitdir}/multi-user.target.wants/
+install -d %{buildroot}%{_sysconfdir}/dbus-1/system.d
+install -m644 daemon/dbus/sailjaild.conf %{buildroot}%{_sysconfdir}/dbus-1/system.d/sailjaild.conf
+install -d %{buildroot}%{_libdir}/sailjail/settings
+install -d %{buildroot}%{_sysconfdir}/sailjail/config
 
 %check
 make HAVE_FIREJAIL=%{jailfish} -C unit test
@@ -81,3 +115,13 @@ make HAVE_FIREJAIL=%{jailfish} -C unit test
 %files tools
 %defattr(-,root,root,-)
 %{_bindir}/measure_launch_time
+
+%files daemon
+%defattr(-,root,root,-)
+%license COPYING
+%{_bindir}/sailjaild
+%{_unitdir}/*.service
+%{_unitdir}/multi-user.target.wants/*.service
+%config %{_sysconfdir}/dbus-1/system.d/sailjaild.conf
+%dir %{_libdir}/sailjail/settings
+%dir %{_sysconfdir}/sailjail/config
