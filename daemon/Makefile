@@ -152,6 +152,15 @@ sailjaild_objs += util.o
 sailjaild : ${sailjaild_objs}
 
 # - - - - - - - - - - - - - - - - - - - -
+# client
+# - - - - - - - - - - - - - - - - - - - -
+
+client : client.o util.o logging.o util.o stringset.o config.o
+
+clean::
+	$(RM) client
+
+# - - - - - - - - - - - - - - - - - - - -
 # desktop_data
 # - - - - - - - - - - - - - - - - - - - -
 
@@ -193,6 +202,8 @@ ALL_SOURCES += settings.c
 ALL_SOURCES += stringset.c
 ALL_SOURCES += users.c
 ALL_SOURCES += util.c
+
+ALL_SOURCES += client.c
 
 PROTO_CPPFLAGS += -D_Float32=float
 PROTO_CPPFLAGS += -D_Float64=double

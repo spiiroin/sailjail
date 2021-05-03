@@ -85,6 +85,7 @@ UTIL_C_BEG
 # define PERMISSIONS_DIRECTORY          SYSCONFDIR "/sailjail/permissions"
 # define PERMISSIONS_EXTENSION          ".permission"
 # define PERMISSIONS_PATTERN            "[A-Z]*" PERMISSIONS_EXTENSION
+# define PROFILES_EXTENSION             ".profile"
 
 /* Applications  from: *.desktop */
 # define APPLICATIONS_DIRECTORY         DATADIR "/applications"
@@ -144,6 +145,7 @@ gchar       *path_to_desktop_name     (const gchar *path);
 gchar       *path_from_desktop_name   (const gchar *stem);
 gchar       *path_to_permission_name  (const gchar *path);
 gchar       *path_from_permission_name(const gchar *stem);
+gchar       *path_from_profile_name   (const gchar *stem);
 
 /* ------------------------------------------------------------------------- *
  * GUTIL

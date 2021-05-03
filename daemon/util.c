@@ -63,6 +63,7 @@ gchar        *path_to_desktop_name     (const gchar *path);
 gchar        *path_from_desktop_name   (const gchar *stem);
 gchar        *path_to_permission_name  (const gchar *path);
 gchar        *path_from_permission_name(const gchar *stem);
+gchar        *path_from_profile_name   (const gchar *stem);
 
 /* ------------------------------------------------------------------------- *
  * GUTIL
@@ -209,6 +210,19 @@ path_from_permission_name(const gchar *stem)
     if( norm )
         path = g_strdup_printf(PERMISSIONS_DIRECTORY "/"
                                "%s" PERMISSIONS_EXTENSION,
+                               norm);
+    g_free(norm);
+    return path;
+}
+
+gchar *
+path_from_profile_name(const gchar *stem)
+{
+    gchar *path = 0;
+    gchar *norm = path_to_permission_name(stem);
+    if( norm )
+        path = g_strdup_printf(PERMISSIONS_DIRECTORY "/"
+                               "%s" PROFILES_EXTENSION,
                                norm);
     g_free(norm);
     return path;
