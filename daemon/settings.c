@@ -833,6 +833,18 @@ appsettings_set_allowed(appsettings_t *self, app_allowed_t allowed)
     if( (unsigned)allowed >= APP_ALLOWED_COUNT )
         allowed = APP_ALLOWED_UNSET;
 
+    /* In case autogrant configuration exists, it takes precedence
+     * over everything but APP_ALLOWED_NEVER */
+    switch( appsettings_get_autogrant(self) ) {
+    case APP_GRANT_ALWAYS:
+    case APP_GRANT_LAUNCH:
+        if( allowed != APP_ALLOWED_NEVER )
+            allowed = APP_ALLOWED_ALWAYS;
+        break;
+    default:
+        break;
+    }
+
     if( self->ast_allowed != allowed ) {
         self->ast_allowed = allowed;
         log_debug("[%u] %s: allowed = %s",
@@ -918,23 +930,6 @@ appsettings_set_permissions(appsettings_t *self, const stringset_t *permissions)
 void
 appsettings_set_granted(appsettings_t *self, const stringset_t *granted)
 {
-    /* Note: This must be kept so that it works also when
-     *       'granted' arg is actually the current value,
-     *       so that it can be used also for re-evaluating
-     *       state after desktop file changes.
-     */
-
-    stringset_t *dummy = stringset_create();
-    stringset_t *effective = NULL;
-
-    /* Clear / keep cleared while not allowed */
-    if( appsettings_get_allowed(self) != APP_ALLOWED_ALWAYS )
-        granted = NULL;
-
-    /* Allow use of granted=NULL to clear */
-    if( !granted )
-        granted = dummy;
-
     /* Limit to subset of permissions defined in application desktop.
      *
      * Note: we might get here due to desktop file removal, and thus
@@ -947,6 +942,29 @@ appsettings_set_granted(appsettings_t *self, const stringset_t *granted)
     const stringset_t *permissions = (appinfo_valid(appinfo) ?
                                       appinfo_get_permissions(appinfo) :
                                       dummy);
+
+    /* Note: This must be kept so that it works also when
+     *       'granted' arg is actually the current value,
+     *       so that it can be used also for re-evaluating
+     *       state after desktop file changes.
+     */
+
+    stringset_t *dummy = stringset_create();
+    stringset_t *effective = NULL;
+
+    /* Clear / keep cleared while not allowed.
+     *
+     * And in case of APP_GRANT_ALWAYS we always grant
+     * full set of available permissions.
+     */
+    if( appsettings_get_allowed(self) != APP_ALLOWED_ALWAYS )
+        granted = NULL;
+    else if( appsettings_get_autogrant(self) == APP_GRANT_ALWAYS )
+        granted = permissions;
+
+    /* Allow use of granted=NULL to clear */
+    if( !granted )
+        granted = dummy;
 
     effective = stringset_filter_in(granted, permissions);
 
@@ -977,10 +995,18 @@ static void
 appsettings_decode(appsettings_t *self, GKeyFile *file)
 {
     const char *sec = appsettings_appname(self);
+
+    /* Read some values as-is.
+     *
+     * Note that at this stage the values may and are allowed to
+     * be in conflict with each other and/or configuration.
+     */
     self->ast_allowed = keyfile_get_integer(file, sec, "Allowed",
                                             APP_ALLOWED_UNSET);
     self->ast_agreed  = keyfile_get_integer(file, sec, "Agreed",
                                             APP_AGREED_UNSET);
+    self->ast_autogrant = keyfile_get_integer(file, sec, "Autogrant",
+                                              APP_GRANT_DEFAULT);
 
     /* 'Permissions' value is internal caching at appsettings level.
      * It must be taken as-is from keyfile (and re-evaluated in
@@ -997,6 +1023,24 @@ appsettings_decode(appsettings_t *self, GKeyFile *file)
     stringset_t *granted = keyfile_get_stringset(file, sec, "Granted");
     appsettings_set_granted(self, granted);
     stringset_delete(granted);
+
+    /* Handle autogrant configuration changes */
+    app_grant_t autogrant = appsettings_get_allowlisted(self);
+    if( self->ast_autogrant != autogrant ) {
+        self->ast_autogrant != autogrant;
+        if( appsettings_get_allowed(self) != APP_ALLOWED_NEVER ) {
+            /* If the change was adding autogrant, it overrides
+             * APP_ALLOWED_UNSET. Otherwise the allow setting
+             * is cleared and user is prompted again. */
+            appsettings_set_allowed(self, APP_ALLOWED_UNSET);
+
+            /* And in case of APP_ALLOWED_ALWAYS we need to make
+             * sure the granted permission set is expanded even
+             * if effective allowed state does not change. */
+            if( self->ast_autogrant == APP_ALLOWED_ALWAYS )
+                appsettings_set_granted(self, appsettings_get_granted(self));
+        }
+    }
 }
 
 static void
